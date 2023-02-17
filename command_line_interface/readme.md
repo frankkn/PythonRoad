@@ -1,3 +1,7 @@
+* $ python3 
+  * ctrl + D: leave
+  * ctrl + L: clean 
+
 * Command-line Prompt
   * bash: $
   * DOS: >
