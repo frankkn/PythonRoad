@@ -1,0 +1,6 @@
+f = open('myFile.txt', 'r')
+L = f.readlines()
+print(len(L))
+print(L[0])
+print(L[1])
+f.close()
