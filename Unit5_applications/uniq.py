@@ -21,4 +21,4 @@ for line in fh.readlines():
   if line != prevLine:
     print(line, end='')
   prevLine = line
-fh.close
+fh.close()
