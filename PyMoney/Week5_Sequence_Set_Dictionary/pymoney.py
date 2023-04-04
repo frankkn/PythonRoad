@@ -5,7 +5,7 @@ def transform_str_to_list(recordstr):
   for record in records:
     name, value = record.split()
     record_list.append((name, int(value))) # Required step 2
-  print(record_list)
+  # print(record_list)
   return record_list
 
 def cal_expense(record_list):

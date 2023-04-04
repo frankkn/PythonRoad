@@ -62,5 +62,5 @@ start()
 # if	__name__	==	'__main__':
 #   start()
 
-
-
+# 1. Support both view or VIEW or ViEw
+# 2. Delete one record or all the records of specified name
