@@ -6,6 +6,7 @@ def initialize():
     with open('records.txt', 'r+') as fh:
       try:
         initial_money = int(fh.readline())
+        print('Welcome back!')
       except ValueError as err:
         sys.stderr.write(str(err) + '\n')
         fh.truncate(0)
@@ -39,6 +40,10 @@ def initialize():
         break
       except ValueError as err:
         sys.stderr.write(str(err) + '\n' + 'Please enter an interger.\n')
+  except PermissionError as err:
+    sys.stderr.write(str(err) + '\n' + 'Permission denied. Please check file permissions.\n')
+    initial_money = 0
+    records = {}
   finally:
     return initial_money, records
 
@@ -52,12 +57,25 @@ def calMoney(initial_money, records):
         money += i
   return money
 
+def is_int(string):
+  try:
+    num = int(string)
+    return True
+  except ValueError:
+    return False
+
 def add(records):
-  name, value = input('Add an expense or income record with description and amount:\n').split()
-  if name in records.keys():
-    records[name].append(int(value))
-  else:
-    records[name] = [int(value)]
+  while True:
+    try:
+      name, value = input('Add an expense or income record with description and amount:\n').split()
+      value = int(value)
+      if name in records.keys():
+        records[name].append(value)
+      else:
+        records[name] = [value]
+      break
+    except ValueError as err:
+      sys.stderr.write(str(err) + '\n' + 'Try again.\n')
   return records
 
 def view(initial_money, records):
@@ -72,19 +90,33 @@ def view(initial_money, records):
 
 def delete(records):
   try:
-    del_list = input('Which record do you want to delete?\n').split()
-    if len(del_list) == 1: # cmd == delete 
-      del records[''.join(del_list)] # tranform list into str
+    del_cmd = input('Which record do you want to delete?\n').split()
+    if len(del_cmd) == 1: # del_cmd == breakfast
+      try:
+        if del_cmd in records:
+          del records[''.join(del_cmd)] # tranform list into str
+      except:    
+        sys.stderr.write(f'Invalid input: {del_cmd} not found.\n') # (1)delete (2)ff
+        
+    elif len(del_cmd) == 2:
+      try:
+        name, value = del_cmd[0], del_cmd[1]
+        if int(value) in records[name]:
+          records[name].remove(int(value))
+          if len(records[name]) == 0:
+            del records[name]
+        else:
+          raise ValueError
+      except ValueError:
+        if is_int(value):
+          sys.stderr.write(f'Value: {value} not found for {name}.\n') # (1)delete (2)b -999
+        else:
+          sys.stderr.write(f'Invalid Value: {value}.\n') # (1)delete (2)b c
     else:
-      name, value = del_list[0], del_list[1]
-      if int(value) in records[name]:
-        records[name].remove(int(value))
-        if len(records[name]) == 0:
-          del records[name]
-      else:
-        raise ValueError
+      raise ValueError
+
   except ValueError:
-    sys.stderr.write(f'Invalid input: {value} not found.')
+    sys.stderr.write(f'Invalid delete format.\n') # e.g. (1)delete (2)a b c
   finally:
     return records
 
