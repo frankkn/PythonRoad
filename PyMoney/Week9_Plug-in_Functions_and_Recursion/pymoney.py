@@ -2,6 +2,14 @@
 import sys
 
 def initialize():
+  """
+  Initializes the program by reading records from a file and setting the initial amount of money.
+  If the records.txt file exists and is valid, it reads the initial amount of money and records from the file.
+  If the records.txt file does not exist or is invalid, it prompts the user to enter the initial amount of money and starts a new record.
+  If the records.txt file has invalid records, it truncates the file and starts a new record.
+  
+  :return: A tuple containing the initial amount of money, the records dictionary, and the category-description dictionary.
+  """
   CD = {} # Cateogory - Description
   try:
     with open('records.txt', 'r+') as fh:
@@ -55,6 +63,13 @@ def initialize():
     return initial_money, records, CD
 
 def cal_money(initial_money, records):
+  """
+  Calculates the total amount of money based on the initial amount of money and the records dictionary.
+  
+  :param initial_money: The initial amount of money.
+  :param records: A dictionary containing the records.
+  :return: The total amount of money.
+  """
   money = initial_money
   for v in records.values():
     if isinstance(v, int):
@@ -65,6 +80,12 @@ def cal_money(initial_money, records):
   return money
 
 def is_int(string):
+  """
+  Checks if a given string can be converted to an integer.
+  
+  :param string: The string to check.
+  :return: True if the string can be converted to an integer, False otherwise.
+  """
   try:
     num = int(string)
     return True
@@ -72,6 +93,16 @@ def is_int(string):
     return False
 
 def add(categories, CD, records):
+  """
+  Adds a record to the records dictionary and the category-description dictionary.
+  It prompts the user to enter the category, description, and amount of the record.
+  If the category is valid, it adds the record to the dictionaries.
+  
+  :param categories: A list of valid categories.
+  :param CD: A dictionary containing the category-description pairs.
+  :param records: A dictionary containing the records.
+  :return: The updated category-description dictionary and records dictionary.
+  """
   while True:
     try:
       cate, name, value = input('Add an expense or income record with category, description, and amount (separate by spaces):\n').split()
@@ -97,6 +128,14 @@ def add(categories, CD, records):
   return CD, records
 
 def view(initial_money, CD, records):
+  """
+  Displays the records in a formatted table.
+  
+  :param initial_money: The initial amount of money.
+  :param CD: A dictionary containing the category-description pairs.
+  :param records: A dictionary containing the records.
+  :return: None.
+  """
   print("Here's your expense and income records:")
   print("%-15s %-20s %s" % ("Category", "Desciption", "Amount")) # left-aligned
   print("="*15 + " " + "="*20 +  " " + "=" * 6)
@@ -109,6 +148,15 @@ def view(initial_money, CD, records):
   print(f'Now you have {cal_money(initial_money, records)} dollars.')
 
 def delete(CD, records):
+  """
+  Deletes a record from the records dictionary and the category-description dictionary.
+  It prompts the user to enter the record to delete.
+  If the record exists, it deletes it from the dictionaries.
+  
+  :param CD: A dictionary containing the category-description pairs.
+  :param records: A dictionary containing the records.
+  :return: The updated category-description dictionary and records dictionary.
+  """
   try:
     del_cmd = input('Which record do you want to delete?\n').split()
     if len(del_cmd) == 2: # del_cmd == meal breakfast
@@ -146,6 +194,15 @@ def delete(CD, records):
     return CD, records
 
 def save(initial_money, CD, records):
+  """
+  Saves the current records to a file called "records.txt".
+  The file includes the initial amount of money, as well as all records.
+
+  :param initial_money: The initial amount of money.
+  :param CD: A dictionary containing the category-description pairs.
+  :param records: A dictionary containing the records.
+  :return: None
+  """
   with open('records.txt', mode = 'w') as fh:
     fh.write(str(initial_money) + '\n')
     for cate in CD.keys(): # meal
@@ -159,6 +216,11 @@ def save(initial_money, CD, records):
         fh.write(cate + ' ' + name + ' ' + value_str + '\n')
 
 def initialize_categories():
+  """
+  Initializes and returns a nested list of categories containing the categories of expenses and income, along with their respective subcategories.
+
+  :return: A nested list of categories
+  """
   categories = ['expense', 
                   ['food', ['meal', 'snack', 'drink'], 
                 'transportation', 
@@ -168,6 +230,13 @@ def initialize_categories():
   return categories
 
 def view_categories(categories, level=0):
+  """
+  Recursively prints the categories passed as a nested list, along with their subcategories, with proper indentation.
+
+  :param categories: A nested list of categories
+  :param level: The indentation level (default 0)
+  :return: None
+  """
   if categories == None:
     return
   if type(categories) in {list, tuple}:
@@ -177,6 +246,13 @@ def view_categories(categories, level=0):
     print(f'{" " * 2 * level}- {categories}')
 
 def is_category_valid(category, categories):
+  """
+  Returns True if the given category is present in the nested list of categories, else returns False.
+
+  :param category: The category to search for
+  :param categories: A nested list of categories
+  :return: True if category is found, False otherwise
+  """
   if type(categories) in {list, tuple}:
     for child in categories:
       if is_category_valid(category, child):
@@ -184,25 +260,80 @@ def is_category_valid(category, categories):
     return False
   return category == categories
 
-def find():
+def find(CD, records, categories):
+  """
+  Asks the user to input a category name to search for and calls the find_subcategories() function to search for the category and its subcategories.
+
+  :return: None
+  """
   cate = input('Which category do you want to find?\n')
-  
-# The 5 function definitions here
- 
-initial_money, records, CD = initialize()
-categories = initialize_categories()
-while True:
-  command = input('\nWhat do you want to do (add / view / delete / view categories / find / exit)? ')
-  if command == 'add':
-    CD, records = add(categories, CD, records)
-  elif command == 'view':
-    view(initial_money, CD, records)
-  elif command == 'delete':
-    CD, records = delete(CD, records)
-  elif command == 'view categories':
-    view_categories(categories)  
-  elif command == 'exit':
-    save(initial_money, CD, records)
-    break
+  print(find_subcategories(cate, categories))
+
+  L = list(filter(lambda x: x in CD.keys(), find_subcategories(cate, categories)))
+
+  print(f"Here's your expense and income records under category {cate}:")
+  print("%-15s %-20s %s" % ("Category", "Desciption", "Amount")) # left-aligned
+  print("="*15 + " " + "="*20 +  " " + "=" * 6)
+  total = 0
+  for each_cate in L:
+    for each_des in CD[each_cate]:
+      print(f'{each_cate:<15s}', end = " ")
+      print(f'{each_des:<20s}', end = " ")
+      print(f"{','.join(map(str, records[each_des])).lstrip('[').rstrip(']')}")
+      total += sum(map(int, records[each_des]))
+  print("="*15 + " " + "="*20 + " " + "="*6)
+  print(f'The total amount above is {total}.')
+
+def find_subcategories(category, categories):
+  """
+  Recursively searches for the given category in the nested list of categories and returns the category along with its subcategories, if found.
+
+  :param category: The category to search for
+  :param categories: A nested list of categories
+  :return: A list containing the category and its subcategories, if found. Otherwise, returns True if the category is found but has no subcategories or returns an empty list if not found.
+  """
+  if type(categories) == list:
+    for v in categories:
+      p = find_subcategories(category, v)
+      if p == True:
+        index = categories.index(v)
+        if index + 1 < len(categories) and \
+            type(categories[index + 1]) == list: # the target category does not have subcategories
+          return flatten(categories[index:index + 2])
+        else:
+          # return only itself if no subcategories
+          return [v]
+      if p != []:
+        return p
+  return True if categories == category else [] # return [] instead of False if not found
+
+def flatten(L):
+  if type(L) == list:
+    result = []
+    for child in L:
+      result.extend(flatten(child))
+    return result
   else:
-    sys.stderr.write(f'Invalid command {command}. Try again.\n')
+    return [L]
+
+# The 5 function definitions here
+if __name__ == '__main__':
+  initial_money, records, CD = initialize()
+  categories = initialize_categories()
+  while True:
+    command = input('\nWhat do you want to do (add / view / delete / view categories / find / exit)? ')
+    if command == 'add':
+      CD, records = add(categories, CD, records)
+    elif command == 'view':
+      view(initial_money, CD, records)
+    elif command == 'delete':
+      CD, records = delete(CD, records)
+    elif command == 'view categories':
+      view_categories(categories)
+    elif command == 'find':
+      find(CD, records, categories)
+    elif command == 'exit':
+      save(initial_money, CD, records)
+      break
+    else:
+      sys.stderr.write(f'Invalid command {command}. Try again.\n')
