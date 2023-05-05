@@ -147,8 +147,20 @@ class Records:
         break
 
   def find(self, target_categories):
-    pass
- 
+    L = list(filter(lambda x: x._category in target_categories, self._records))
+    print(f'Here\'s your expense and income records under category "{category}":')
+    print("%-20s %-20s %s" % ("Category", "Desciption", "Amount")) # left-aligned
+    print("=" * 20 + " " + "=" * 20 +  " " + "=" * 6)
+    total = 0
+    line_no = 0
+    for each_rec in L:
+      cate, item, amount = each_rec._category, each_rec._item, each_rec._amount
+      total += int(amount)
+      line_no += 1
+      print(f'{line_no:>2}.{cate:<17s} {item:<20s} {amount}')
+    print("="*20 + " " + "="*20 + " " + "="*6)
+    print(f'The total amount above is {total}.')
+
   def save(self):
     with open('records.txt', mode = 'w') as fh:
       fh.write(str(self._initial_money) + '\n')
@@ -184,21 +196,23 @@ class Categories:
     return valid(self._categories, test_category)
  
   def find_subcategories(self, category):
-    if type(self._categories) == list:
-      for v in self._categories:
-        p = self.find_subcategories(category, v)
-        if p == True:
-          index = self._categories.index(v)
-          if index + 1 < len(self._categories) and \
-              type(self._categories[index + 1]) == list: # the target category does not have subcategories
-            return self._flatten(self._categories[index:index + 2])
-          else:
-            # return only itself if no subcategories
-            return [v]
-        if p != []:
-          return p
-    return True if self._categories == category else [] # return [] instead of False if not found
- 
+    def find_sub(categories, category):
+      if type(categories) == list:
+        for v in categories:
+          p = find_sub(v, category)
+          if p == True:
+            index = categories.index(v)
+            if index + 1 < len(categories) and \
+                type(categories[index + 1]) == list: # the target category does not have subcategories
+              return self._flatten(categories[index:index + 2])
+            else:
+              # return only itself if no subcategories
+              return [v]
+          if p != []:
+            return p
+      return True if categories == category else [] # return [] instead of False if not found
+    return find_sub(self._categories, category)
+
   def _flatten(self, L):
     if type(L) == list:
       result = []
