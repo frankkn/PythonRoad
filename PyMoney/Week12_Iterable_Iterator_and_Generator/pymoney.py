@@ -2,8 +2,13 @@
 import sys
 
 class Record:
-  """Represent a record."""
+  """
+  Represent a record.
+  """
   def __init__(self, category, item, amount):
+    """
+    Initialize the record object's attributes.
+    """
     self._category = category
     self._item = item
     self._amount = amount
@@ -21,9 +26,13 @@ class Record:
     return self._amount
 
 class Records:
-  """Maintain a list of all the 'Record's and the initial amount of money."""
+  """
+  Maintain a list of all the 'Record's and the initial amount of money.
+  """
   def __init__(self):
-    """Initializes the program by reading records from a file and setting the initial amount of money."""
+    """
+    Initialize the program by reading records from records.txt and set the initial amount of money.
+    """
     try:
       with open('records.txt', 'r+') as fh:
         try:
@@ -62,6 +71,10 @@ class Records:
       self._records = []
  
   def add(self, record, catogories):
+    """
+    Add a new record to the list.
+    Usage: [category] [item] [amount]
+    """
     while True:
       try:
         category, item, amount = record.split()
@@ -86,7 +99,9 @@ class Records:
 
 
   def view(self):
-    """Print all the records and report the balance."""
+    """
+    Print all the records and report the balance.
+    """
     print("Here's your expense and income records:")
     print("%-20s %-20s %s" % ("Category", "Desciption", "Amount")) # left-aligned
     print("="*20 + " " + "="*20 +  " " + "=" * 6)
@@ -101,6 +116,12 @@ class Records:
     print(f'Now you have {total} dollars.')
 
   def delete(self, record):
+    """
+    Delete one or more records from the list.
+    Usage(for one record): [category] [item] [amount].
+    Usage(for multiple record): * [line_no].
+    Usage(for category or item): [category/item] [category_name/item_name].
+    """
     del_rec = record.split() # record = 'meal breakfast -50'
     try:
       if del_rec[0] == '*':
@@ -136,10 +157,12 @@ class Records:
       sys.stderr.write('Example: category meal or item breakfast\n')
  
   def revise(self, line_no, revise_record):
+    """
+    Revise a record from the list.
+    Usage: Enter line_no , then enter [category] [item] [amount]
+    """
     category, item, amount= revise_record.split()
-    print(line_no)
     for i, v in enumerate(self._records):
-      print(i)
       if i+1 == int(line_no):
         v._category = category
         v._item = item
@@ -147,6 +170,9 @@ class Records:
         break
 
   def find(self, target_categories):
+    """
+    Print all records in the specified category or in a subcategory under that one.
+    """
     L = list(filter(lambda x: x._category in target_categories, self._records))
     print(f'Here\'s your expense and income records under category "{category}":')
     print("%-20s %-20s %s" % ("Category", "Desciption", "Amount")) # left-aligned
@@ -162,6 +188,9 @@ class Records:
     print(f'The total amount above is {total}.')
 
   def save(self):
+    """
+    Save records to records.txt.
+    """
     with open('records.txt', mode = 'w') as fh:
       fh.write(str(self._initial_money) + '\n')
       for rec in self._records:
@@ -169,12 +198,20 @@ class Records:
         fh.write(s + '\n')
 
 class Categories:
-  """Maintain the category list and provide some methods."""
+  """
+  Maintain the category list and provide some methods.
+  """
   def __init__(self):
+    """
+    Initialize predefined list of categories.
+    """
     self._categories = ['expense', ['food', ['meal', 'snack', 'drink'], 'transportation', ['bus','railway']], \
                         'income', ['salary', 'bonus']]
  
   def view(self):
+    """
+    Print all the provided categories hierarchically.
+    """
     def view_category(category, level = 0):
       if category == None:
         return
@@ -186,6 +223,9 @@ class Categories:
     view_category(self._categories)
 
   def is_category_valid(self, test_category):
+    """
+    Check whether given category is in predefined categories.
+    """
     def valid(categories, test_category):
       if type(categories) in {list, tuple}:
         for child in categories:
@@ -196,31 +236,23 @@ class Categories:
     return valid(self._categories, test_category)
  
   def find_subcategories(self, category):
-    def find_sub(categories, category):
-      if type(categories) == list:
-        for v in categories:
-          p = find_sub(v, category)
-          if p == True:
-            index = categories.index(v)
-            if index + 1 < len(categories) and \
-                type(categories[index + 1]) == list: # the target category does not have subcategories
-              return self._flatten(categories[index:index + 2])
-            else:
-              # return only itself if no subcategories
-              return [v]
-          if p != []:
-            return p
-      return True if categories == category else [] # return [] instead of False if not found
-    return find_sub(self._categories, category)
-
-  def _flatten(self, L):
-    if type(L) == list:
-      result = []
-      for child in L:
-        result.extend(self._flatten(child))
-      return result
-    else:
-      return [L]
+    """
+    Find the target category and flatten the subcategories under it.
+    """
+    def find_subcategories_gen(category, categories, found = False):
+      if type(categories) == list: # recursive case
+        for index, child in enumerate(categories):
+          yield from find_subcategories_gen(category, child, True)
+          if child == category and index + 1 < len(categories) \
+              and type(categories[index + 1]) == list:
+              # When the target category is found,
+              # recursively call this generator on the subcategories
+              # with the flag set as True.
+              yield from find_subcategories_gen(category, categories[index+1], True)
+      else: # base case
+        if categories == category or found == True:
+          yield categories
+    return list(find_subcategories_gen(category, self._categories))
 
 # class definitions here
 
