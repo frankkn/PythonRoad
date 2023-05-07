@@ -1,0 +1,13 @@
+1000
+meal breakfast -50 2023-05-07 14:27:40
+drink coffee -100 2023-05-07 14:27:50
+food bread -80 2023-05-07 14:27:56
+food sausage -40 2023-05-07 14:28:35
+meal lunch -120 2023-05-07 14:40:59
+railway MRT -45 2023-05-07 14:41:07
+transportation taxi -170 2023-05-07 14:41:15
+bus 902 -20 2023-05-07 14:41:20
+income lottery 50 2023-05-07 14:41:25
+salary part-time 1200 2023-05-07 14:41:31
+snack cake -35 2023-05-07 14:41:37
+meal lunch -70 2023-05-07 14:41:42
