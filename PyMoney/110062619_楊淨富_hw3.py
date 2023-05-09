@@ -277,6 +277,8 @@ class Categories:
       if type(categories) == list:
         for index, child in enumerate(categories):
           yield from find_subcategories_gen(category, child, found)
+          # for sub in find_subcategories_gen(category, child, found):
+          #   yield sub
           if child == category and index + 1 < len(categories) \
               and type(categories[index + 1]) == list:
               yield from find_subcategories_gen(category, categories[index+1], True)
