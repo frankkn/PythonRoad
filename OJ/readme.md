@@ -46,6 +46,15 @@ Home page: [DM::OJ](https://oj.epl.tw/)
   * Possible Number
 * Week 10
   * Design an Ordered Stream
+  * Triangle
+  * Recent Calls
+* Week 11
+  * Matrix
+  * My String
+  * Sort by Date
+* Week 12
+  * Geometric Sequence
+  * Pi Sequence
 * Special
   * Google Code Jam '22 Round 1B Problem A - Pancake Deque (7pts, 8pts, 10pts)
   * ECOO '21 P1 - Many Messages
