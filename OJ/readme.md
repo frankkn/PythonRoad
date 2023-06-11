@@ -55,6 +55,10 @@ Home page: [DM::OJ](https://oj.epl.tw/)
 * Week 12
   * Geometric Sequence
   * Pi Sequence
+* Week 13
+  * Score Calculator
+* Week 14
+  * Strong Password
 * Special
   * Google Code Jam '22 Round 1B Problem A - Pancake Deque (7pts, 8pts, 10pts)
   * ECOO '21 P1 - Many Messages
